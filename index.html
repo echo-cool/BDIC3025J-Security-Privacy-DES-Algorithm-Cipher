@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<!--     This is the project file of Security & Privacy 2022 DES Algorithm -->
+<!--     Yuyang Wang  -->
+<!--     19206226 & 19372316  -->
+<!--     Implemented Functionalities -->
+<!--           Implemented both the encryption and the decryption function -->
+<!--           No restrictions on the length of the plain/cipher text or the length of the key. -->
+<!--           Designed and implemented a user-friendly interface -->
+<!--           Plain/cipher text can be drawn from the file system or input through the interface. -->
+<!--           Encryption and decryption are two independent components. -->
+<!--           Key needs to be supplied when performing either component. -->
+<html>
+<head>
+    <!--  DES Algorithm  -->
+    <!--  Yuyang Wang  -->
+    <!--  19206226 & 19372316  -->
+    <title>DES Algorithm</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <!--    Global Style     -->
+    <style>
+        main > .container {
+            padding: 30px 15px 0;
+        }
+
+        .debug {
+            display: none;
+        }
+    </style>
+    <!--    Javascript   -->
+    <script src="js/jquery-3.6.1.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <!--  Page logic  -->
+    <script src="js/app.js"></script>
+    <script src="js/base64.js"></script>
+    <!--  The DES implementation  -->
+    <script src="js/DES.js"></script>
+    <script src="js/donetyping.js"></script>
+</head>
+<body class="d-flex flex-column h-100">
+
+<header>
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Data Encryption Standard (DES)</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse"
+                    aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav me-auto mb-2 mb-md-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="#">Home</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+
+<!-- Begin page content -->
+<main class="flex-shrink-0">
+
+    <div class="container">
+        <h1 class="mt-5">Data Encryption Standard (DES) Implementation</h1>
+        <p class="">The Data Encryption Standard (DES) shall consist of the following Data Encryption Algorithm (DES)
+            and Triple Data Encryption Algorithm (TDEA, as described in ANSI X9.52). These devices shall be designed in
+            such a way that they may be used in a computer system or network to provide cryptographic protection to
+            binary coded data. The method of implementation will depend on the application and environment. The devices
+            shall be implemented in such a way that they may be tested and validated as accurately performing the
+            transformations specified in the following algorithms.</p>
+        <p>Document Reference: <a
+                href="https://csrc.nist.gov/CSRC/media/Publications/fips/46/3/archive/1999-10-25/documents/fips46-3.pdf">https://csrc.nist.gov/CSRC/media/Publications/fips/46/3/archive/1999-10-25/documents/fips46-3.pdf</a>
+        </p>
+        <h2 class="mt-5">Student Info</h2>
+        <table>
+            <tr>
+                <td>Name:</td>
+                <td><b>Yuyang Wang</b></td>
+            </tr>
+            <tr>
+                <td>Student ID (BJUT):</td>
+                <td><b>19372316</b></td>
+            </tr>
+            <tr>
+                <td>Student ID (UCD):</td>
+                <td><b>19206226</b></td>
+
+        </table>
+    </div>
+    <div class="container">
+        <!-- Main container -->
+        <div class="row">
+            <button class="btn btn-light" style="margin: 20px" onclick="ToggleDebugInformation()">Show Debug
+                Information
+            </button>
+            <div class="col-6">
+                <h1>Encipher</h1>
+                <div class="mb-3">
+                    <label class="form-label">Plain Text</label>
+                    <input id="clearfile" type="file" style="display: none">
+                    <textarea type="text" class="form-control" id="encipherPlainText" name="plainText"
+                              style="height: 150px"></textarea>
+
+                </div>
+                <a class="btn btn-success" onclick="$('input[id=clearfile]').click();"
+                   style="margin-top: 0px; margin-bottom: 20px">Browse</a>
+                <div class="mb-3">
+                    <label class="form-label debug">Text Chunks</label>
+                    <textarea type="text" class="form-control debug" id="encipherTextChunks" name="encipherTextChunks"
+                              disabled></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label debug">Text Bit</label>
+                    <textarea type="text" class="form-control debug" id="encipherTextBit" name="encipherTextBit"
+                              disabled></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">KEY</label>
+                    <textarea type="text" class="form-control" id="encipherKey" name="encipherKey"
+                              placeholder="00000000"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label debug">KEY Bit</label>
+                    <textarea type="text" class="form-control debug" id="encipherKeyBit" name="encipherKey"
+                              disabled></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label debug">KEYs Generated</label>
+                    <textarea type="text" class="form-control debug" id="encipherKeysGenerated"
+                              name="encipherKeysGenerated"
+                              style="height: 200px" disabled></textarea>
+                </div>
+                <div class="mb-3">
+                    <div id="encipherLoading" style="display: flex; justify-content: center; align-content: center;">
+                        <div class="spinner-border" role="status"
+                             style="scale: 10; position: absolute; z-index: 0">
+                            <span class="sr-only"></span>
+                        </div>
+                    </div>
+                    <label class="form-label">Cipher Bit</label>
+                    <textarea type="text" class="form-control" id="encipherCipherText" name="encipherCipherText"
+                              style="height: 375px" disabled></textarea>
+
+                </div>
+                <button class="btn btn-primary" id="EncipherBtn" onclick="EncipherBtnClick()">Encipher</button>
+                <button class="btn btn-primary" id="CopyBtn"
+                        onclick="navigator.clipboard.writeText($('#encipherCipherText').val())">Copy
+                </button>
+                <button class="btn btn-primary" id="DownloadCipherDataBtn"
+                        onclick="function DownloadCipherDataBtn() {
+                            var blob = new Blob([$('#encipherCipherText').val()], {type: 'text/plain'});
+                            var url = window.URL.createObjectURL(blob);
+                            var a = document.createElement('a');
+                            a.href = url;
+                            a.download = 'cipher.data';
+                            document.body.appendChild(a);
+                            a.click();
+                            a.remove();
+                        }
+                        DownloadCipherDataBtn()">Download
+                </button>
+            </div>
+            <div class="col-6">
+                <h1>Decipher</h1>
+                <div class="mb-3">
+                    <label class="form-label">Cipher Bit</label>
+                    <textarea type="text" class="form-control" id="decipherCipherText" name="plainText"
+                              style="height: 150px"></textarea>
+                </div>
+                <button class="btn btn-success" id="LoadCipherDataFromDiskBtn" onclick="function LoadCipherDataFromDiskBtn() {
+                    var input = document.createElement('input');
+                    input.type = 'file';
+                    input.onchange = e => {
+                        var file = e.target.files[0];
+                        var reader = new FileReader();
+                        ShowDecipherLoading();
+                        reader.readAsText(file, 'UTF-8');
+                        reader.onload = readerEvent => {
+                            var content = readerEvent.target.result;
+                            $('#decipherCipherText').val(content);
+                            setTimeout(function () {
+                                handleValueChange('D');
+                            }, 100);
+                        }
+                    }
+                    input.click();
+                }
+                LoadCipherDataFromDiskBtn()" style="margin-top: 0px; margin-bottom: 35px">Load
+                </button>
+                <div class="mb-3">
+                    <label class="form-label">KEY</label>
+                    <textarea type="text" class="form-control" id="decipherKey" name="plainText"
+                              placeholder="00000000"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label debug">KEY Bit</label>
+                    <textarea type="text" class="form-control debug" id="decipherKeyBit" name="plainText"
+                              disabled></textarea>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label debug">KEYs Generated</label>
+                    <textarea type="text" class="form-control debug" id="decipherKeysGenerated"
+                              name="decipherKeysGenerated"
+                              style="height: 200px" disabled></textarea>
+                </div>
+                <div class="mb-3">
+                    <div id="decipherLoading" style="display: flex; justify-content: center; align-content: center;">
+                        <div class="spinner-border" role="status"
+                             style="scale: 10; position: absolute; z-index: 0">
+                            <span class="sr-only"></span>
+                        </div>
+                    </div>
+                    <label class="form-label">Plain Text</label>
+                    <textarea type="text" class="form-control" id="decipherPlainText" name="plainText"
+                              style="height: 380px"
+                              disabled></textarea>
+                </div>
+
+
+                <button class="btn btn-primary" id="DecipherBtn" onclick="DecipherBtnClick()">Decipher</button>
+                <a class="btn btn-primary" id="DecipherDownloadBtn" onclick="clickDownloadclear(this)">Download</a>
+                <div class="mb-3">
+                    <div style="margin-bottom: 200px"></div>
+                    <div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+
+    </div>
+</main>
+
+
+</body>
+</html>
