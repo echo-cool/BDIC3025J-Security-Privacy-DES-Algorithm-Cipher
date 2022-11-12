@@ -380,3 +380,49 @@ let enc = encrypt(msg, key);
 console.log("Encrypted: " + enc);
 let dec = decrypt(enc, key);
 console.log("Decrypted: " + dec);
+
+
+function encryptLong(str, key){
+    encipherTextChunks = chunkString(str, 8);
+    encipherTextBit = [];
+    // Convert the data to binary
+    for (let i = 0; i < encipherTextChunks.length; i++) {
+        let textBit = str2Bit(encipherTextChunks[i]);
+        encipherTextBit.push(textBit);
+    }
+    let textBit = [];
+    for (let i = 0; i < encipherTextBit.length; i++) {
+        textBit.push(chunkString(encipherTextBit[i].join(""), 8));
+    }
+    encipherKeyBit = strToKeyBit(key);
+    encipherKeysGenerated = keySchedule(encipherKeyBit);
+    encipherCipherText = "";
+    for (let i = 0; i < encipherTextChunks.length; i++) {
+        let cipherBit = encrypt(encipherTextChunks[i], key);
+        encipherCipherText += cipherBit + "; ";
+    }
+    return encipherCipherText;
+}
+
+function decryptLong(enc, key){
+    decipherKeyBit = strToKeyBit(key);
+    let textBit = [];
+    textBit.push(chunkString(decipherKeyBit.join(""), 8));
+    // Generate the keys, will be displayed in the debug area
+    encipherKeysGenerated = keySchedule(decipherKeyBit).reverse();
+    let CipherBitsChunks = enc.split(";");
+    decipherPlainText = "";
+    textBit = [];
+    textBit.push(chunkString(encipherKeysGenerated.join(""), 8 * 8));
+    for (let i = 0; i < CipherBitsChunks.length; i++) {
+        if (CipherBitsChunks[i].length < 16 || CipherBitsChunks[i] === "") {
+            continue;
+        }
+        let cipherBit = CipherBitsChunks[i].trim().replace(/\s/g, "");
+        decipherPlainText += decrypt(cipherBit, key).trim();
+    }
+    return decipherPlainText;
+}
+
+console.log(encryptLong("ddddddddddddddddddddddddddddddddddd", "dfsd"))
+console.log(decryptLong(encryptLong("ddddddddddddddddddddddddddddddddddd", "dfsd"), "dfsd"))
