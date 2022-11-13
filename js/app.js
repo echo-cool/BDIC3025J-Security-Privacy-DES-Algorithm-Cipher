@@ -28,6 +28,17 @@ function updateValueDecipher() {
     decipherCipherText = document.getElementById("decipherCipherText").value;
     decipherKey = document.getElementById("decipherKey").value;
 }
+function ShowChatboxLoading() {
+    // Show Encipher Loading Animation
+    console.log("ChatboxLoading");
+    $('#ChatboxLoading')[0].style.display = "flex";
+}
+
+function HideChatboxLoading() {
+    // Hide Encipher Loading Animation
+    console.log("HideChatboxLoading");
+    $('#ChatboxLoading')[0].style.display = "none";
+}
 
 function ShowEncipherLoading() {
     // Show Encipher Loading Animation
