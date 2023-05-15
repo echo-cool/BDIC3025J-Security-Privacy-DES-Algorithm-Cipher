@@ -3,7 +3,7 @@ name: Docker-compose build
 on:
   workflow_dispatch:
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
 #  pull_request:
 #    branches: [ "main" ]
 
