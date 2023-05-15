@@ -1,0 +1,17 @@
+version: '3'
+services:
+  bdic3025j-des-cipher:
+    image: echocool/bdic3025j-security-privacy-des-algorithm-cipher:${VERSION:-latest}
+    container_name: bdic3025j-security-privacy-des-algorithm-cipher
+    build:
+      context: .
+    restart: on-failure
+    networks:
+      - bdic3025j_network
+    expose:
+      - "80"
+    ports:
+      - "80:80"
+
+networks:
+  bdic3025j_network:
